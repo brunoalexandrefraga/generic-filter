@@ -16,9 +16,9 @@ d = 2 * log10(n_ws);
 
 n = ceil(c / d);
 
-n_o = zeros(n, 1);
-n_w = zeros(n, 1);
-n_s = zeros(n, 1);
+n_o = zeros(1, n);
+n_w = zeros(1, n);
+n_s = zeros(1, n);
 
 for k = 1 : n
    factor = 1;
@@ -33,4 +33,5 @@ for k = 1 : n
    n_s(k) = factor * (n_o(k) + 1i * n_w(k));
 end
 
-plot(n_s, 'x');
+
+G = zpk([], n_s, E ^(-1))

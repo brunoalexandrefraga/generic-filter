@@ -16,21 +16,28 @@ d = 2 * log10(n_ws);
 
 n = ceil(c / d);
 
-n_o = zeros(2 * n, 1);
-n_w = zeros(2 * n, 1);
-n_s = zeros(2 * n, 1);
+n_o = zeros(1, n);
+n_w = zeros(1, n);
+n_s = zeros(1, n);
 
 for k = 1 : n
+   factor = 1;
+
    n_o(k) = E ^ (-1 / n) * sin(((2 * k - 1) * pi) / (2 * n));
    n_w(k) = E ^ (-1 / n) * cos(((2 * k - 1) * pi) / (2 * n));
 
-   n_s(k) = n_o(k) + 1i * n_w(k);
-end
-for k = n + 1 : 2 * n
-   n_o(k) = -n_o(k - n);
-   n_w(k) = -n_w(k - n);
+   if n_o(k) > 0
+       factor = -1;
+   end
 
-   n_s(k) = n_o(k) + 1i * n_w(k);
+   n_s(k) = factor * (n_o(k) + 1i * n_w(k));
 end
 
-disp(n_s);  
+numerator = E ^(-1);
+denominator = n_s;
+Z = [0];
+P = [-1-1i -1+1i -2];
+K = 5;
+G = zpk(Z,P,K);
+
+sys = tf(numerator,denominator)
