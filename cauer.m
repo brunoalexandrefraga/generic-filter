@@ -108,3 +108,8 @@ T_bar = G0 / D0 * T
 %omega_c = sqrt(omega_p * omega_s);
 
 %T = T_bar * omega_p
+
+
+
+%bode(T_bar);
+%pzplot(T_bar);
