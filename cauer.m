@@ -21,7 +21,9 @@ q = q0 + 2 * q0 ^ 5 + 15 * q0 ^ 9 + 150 * q0 ^ 13;
 d = (10 ^ (0.1 * Amin) - 1) / (10 ^ (0.1 * Amax) - 1);
 n = ceil(log10(16 * d) / log10(1 / q));
 
-Lambda = (1 / 2 * n) * log((10 ^ (0.05 * Amax) + 1) / (10 ^ (0.05 * Amax) - 1));
+n_is_odd = mod(n, 2) == 1;
+
+Lambda = (1 / (2 * n)) * log((10 ^ (0.05 * Amax) + 1) / (10 ^ (0.05 * Amax) - 1));
 
 sigma0_bar_num = 0;
 for m = 0 : M
@@ -43,7 +45,7 @@ s_bar = tf('s');
 
 D0 = 1;
 r = 0;
-if (-1) ^ n == -1 % Verify if n is odd
+if n_is_odd
     r = (n - 1) / 2;
     D0 = omega_s_bar ^ (-1/2) * s_bar + sigma0_bar;
 else
@@ -64,7 +66,7 @@ T = 1;
 for i = 1 : r
     mu = i;
 
-    if (-1) ^ n ~= -1 % Verify if n is not odd (is even)
+    if ~n_is_odd
         mu = i - 1 / 2;
     end
 
@@ -78,7 +80,7 @@ for i = 1 : r
     for m = 1 : M
         Omega_den = Omega_den + (-1) ^ m * q ^ (m ^ 2) * cos((2 * m * pi * mu) / n);
     end
-    Omega_den = 1 + 2 * q ^ (1 / 4) * Omega_den;
+    Omega_den = 1 + 2 * Omega_den;
 
     Omega(i) = Omega_num / Omega_den;
 
@@ -86,19 +88,23 @@ for i = 1 : r
 
     A0(i) = 1 / Omega(i) ^ 2;
 
-    B0(i) = ((sigma0_bar * V(i)) ^ 2 + (Omega(i) * W)) / (1 + sigma0_bar ^ 2 * Omega(i) ^ 2) ^ 2;
+    B0(i) = ((sigma0_bar * V(i)) ^ 2 + (Omega(i) * W) ^ 2) / (1 + sigma0_bar ^ 2 * Omega(i) ^ 2) ^ 2;
 
     B1(i) = 2 * sigma0_bar * V(i) / (1 + sigma0_bar ^ 2 * Omega(i) ^ 2);
 
     G0 = G0 * B0(i) / A0(i) * omega_s_bar ^ (1 / 2);
 
-    T = T * ((s_bar ^ 2) + omega_s_bar * A0(i)) / (s_bar ^ 2 + omega_s_bar ^ (1 / 2) * B1(i) + omega_s_bar * B0(i));
+    T = T * ((s_bar ^ 2) + omega_s_bar * A0(i)) / (s_bar ^ 2 + omega_s_bar ^ (1 / 2) * B1(i) * s_bar + omega_s_bar * B0(i));
 end
 
-if (-1) ^ n == -1 % Verify if n is odd
+if n_is_odd
     G0 = sigma0_bar * G0;
 else
     G0 = 10 ^ (-0.05 * Amax) * G0;
 end
 
-T = G0 / D0 * T
+T_bar = G0 / D0 * T
+
+%omega_c = sqrt(omega_p * omega_s);
+
+%T = T_bar * omega_p

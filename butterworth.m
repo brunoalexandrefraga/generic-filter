@@ -1,5 +1,8 @@
-omega_p = 2; % [kHz]
-omega_s = 3.2; % [kHz]
+f_p = 2; % [kHz]
+f_s = 3.2; % [kHz]
+
+omega_p = 2 * pi * f_p; % [kHz]
+omega_s = 2 * pi * f_s; % [kHz]
 
 Amax = 0.8; % [dB]
 Amin = 50; % [dB]
@@ -35,4 +38,6 @@ end
 
 G0 = epsilon ^ (-1);
 
-T = tf([G0], s_bar)
+T_bar = tf(G0, s_bar);
+
+T = T_bar * omega_p
