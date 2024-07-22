@@ -38,9 +38,11 @@ end
 
 G0 = epsilon ^ (-1);
 
-T_bar = tf(G0, s_bar)
+T_bar = tf(G0, s_bar);
 
-%T = T_bar * omega_p
+T = T_bar * omega_p;
 
 %bode(T_bar);
 %pzplot(T_bar);
+%fvtool(cell2mat(T_bar.Numerator),cell2mat(T_bar.Denominator),'polezero');
+%fvtool(cell2mat(T.Numerator),cell2mat(T.Denominator),'magnitude');

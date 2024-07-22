@@ -103,13 +103,13 @@ else
     G0 = 10 ^ (-0.05 * Amax) * G0;
 end
 
-T_bar = G0 / D0 * T
+T_bar = G0 / D0 * T;
 
-%omega_c = sqrt(omega_p * omega_s);
+omega_c = sqrt(omega_p * omega_s);
 
-%T = T_bar * omega_p
-
-
+T = T_bar * omega_p;
 
 %bode(T_bar);
 %pzplot(T_bar);
+%fvtool(cell2mat(T_bar.Numerator),cell2mat(T_bar.Denominator),'polezero');
+%fvtool(cell2mat(T_bar.Numerator),cell2mat(T_bar.Denominator),'magnitude');
