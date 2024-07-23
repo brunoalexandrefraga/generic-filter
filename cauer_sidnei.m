@@ -112,12 +112,16 @@ T_bar = G0 / D0 * T;
 % Resposta em Frequência
 [num, den] = tfdata(T_bar, 'v');
 
-% Plot da Resposta em Frequência
-[H, w] = freqs(num, den, logspace(-1, 2, 1024));
+% Desnormalização da frequência
+[num, den] = lp2lp(num, den, omega_p);
 
-figure;
-semilogx(w / (2 * pi), 20 * log10(abs(H)));
-title('Resposta em Frequência do Filtro Cauer');
-xlabel('Frequência (kHz)');
-ylabel('Magnitude (dB)');
-grid on;
+% Plot da Resposta em Frequência
+[H, w] = freqs(num, den, 4096);
+
+plot(w/(2*pi), ...
+    mag2db(abs(H)))
+axis([0 5 -60 5])
+grid
+xlabel("Frequency (kHz)")
+ylabel("Magnitude (dB)")
+legend(["butter" "ellip"])

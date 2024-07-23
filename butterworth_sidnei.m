@@ -54,10 +54,10 @@ T_bar = tf(G0, s_bar);
 % Resposta em Frequência
 [H, w] = freqs(num, den, 4096);
 
-% Plot da Resposta em Frequência
-figure;
-plot(w / (2 * pi), 20 * log10(abs(H)));
-title('Resposta em Frequência do Filtro Butterworth');
-xlabel('Frequência (kHz)');
-ylabel('Magnitude (dB)');
-grid on;
+plot(w/(2*pi), ...
+    mag2db(abs(H)))
+axis([0 5 -60 5])
+grid
+xlabel("Frequency (kHz)")
+ylabel("Magnitude (dB)")
+legend(["butter" "ellip"])
