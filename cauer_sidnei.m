@@ -105,11 +105,19 @@ end
 
 T_bar = G0 / D0 * T;
 
-omega_c = sqrt(omega_p * omega_s);
 
-T = T_bar * omega_p;
 
-%bode(T_bar);
-%pzplot(T_bar);
-%fvtool(cell2mat(T_bar.Numerator),cell2mat(T_bar.Denominator),'polezero');
-%fvtool(cell2mat(T_bar.Numerator),cell2mat(T_bar.Denominator),'magnitude');
+
+
+% Resposta em Frequência
+[num, den] = tfdata(T_bar, 'v');
+
+% Plot da Resposta em Frequência
+[H, w] = freqs(num, den, logspace(-1, 2, 1024));
+
+figure;
+semilogx(w / (2 * pi), 20 * log10(abs(H)));
+title('Resposta em Frequência do Filtro Cauer');
+xlabel('Frequência (kHz)');
+ylabel('Magnitude (dB)');
+grid on;

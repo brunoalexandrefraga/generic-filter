@@ -40,9 +40,24 @@ G0 = epsilon ^ (-1);
 
 T_bar = tf(G0, s_bar);
 
-T = T_bar * omega_p;
 
-%bode(T_bar);
-%pzplot(T_bar);
-%fvtool(cell2mat(T_bar.Numerator),cell2mat(T_bar.Denominator),'polezero');
-%fvtool(cell2mat(T.Numerator),cell2mat(T.Denominator),'magnitude');
+
+
+
+
+% Função de transferência normalizada
+[num, den] = zp2tf([], s_bar, G0);
+
+% Desnormalização da frequência
+[num, den] = lp2lp(num, den, omega_p);
+
+% Resposta em Frequência
+[H, w] = freqs(num, den, 4096);
+
+% Plot da Resposta em Frequência
+figure;
+plot(w / (2 * pi), 20 * log10(abs(H)));
+title('Resposta em Frequência do Filtro Butterworth');
+xlabel('Frequência (kHz)');
+ylabel('Magnitude (dB)');
+grid on;
