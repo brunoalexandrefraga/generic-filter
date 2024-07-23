@@ -51,6 +51,9 @@ T_bar = tf(G0, s_bar);
 % Desnormalização da frequência
 [num, den] = lp2lp(num, den, omega_p);
 
+% Função de transferência desnormalizada
+sys = tf(num, den);
+
 % Resposta em Frequência
 [H, w] = freqs(num, den, 4096);
 

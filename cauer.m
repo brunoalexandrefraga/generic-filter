@@ -115,6 +115,9 @@ T_bar = G0 / D0 * T;
 % Desnormalização da frequência
 [num, den] = lp2lp(num, den, omega_p);
 
+% Função de transferência desnormalizada
+sys = tf(num, den);
+
 % Plot da Resposta em Frequência
 [H, w] = freqs(num, den, 4096);
 
