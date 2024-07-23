@@ -60,4 +60,3 @@ axis([0 5 -60 5])
 grid
 xlabel("Frequency (kHz)")
 ylabel("Magnitude (dB)")
-legend(["butter" "ellip"])
