@@ -118,8 +118,7 @@ T_bar = G0 / D0 * T;
 % Plot da Resposta em Frequência
 [H, w] = freqs(num, den, 4096);
 
-plot(w/(2*pi), ...
-    mag2db(abs(H)))
+plot(w/(2*pi), mag2db(abs(H)))
 axis([0 5 -60 5])
 grid
 xlabel("Frequency (kHz)")
