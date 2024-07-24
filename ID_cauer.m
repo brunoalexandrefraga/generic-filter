@@ -1,3 +1,4 @@
+%------------- CAUER -------------%
 M = 5;
 
 Fs = 48; % [kHz]
@@ -111,6 +112,29 @@ T_bar = G0 / D0 * T;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%------------- INVARIÂNCIA INDICIAL -------------%
 % Resposta em Frequência
 [num, den] = tfdata(T_bar, 'v');
 
@@ -120,37 +144,13 @@ T_bar = G0 / D0 * T;
 % Função de transferência desnormalizada
 Ha = tf(num, den);
 
-
-
-
-
-
-
-
-
-
-
-
-
-%num = [0 1];
-%den = [1 3];
-
-
-
-
 % Calcula Ga = Ha / s
 den = [den, 0]; % den * s
 num = [0, num]; % num
 
 Ga = tf(num, den);
 
-
-
-
-
-
 [r,p,k] = residue(num, den);
-
 
 % Inicialize a função simbólica s
 syms s t z n
@@ -159,6 +159,7 @@ g_t = 0;
 % Transformada de Laplace inversa para cada termo de fração parcial
 for i = 1:length(r)
     term = r(i) / (s - p(i));
+
     g_t = g_t + ilaplace(term, s, t);
 end
 
@@ -173,15 +174,54 @@ G_z = ztrans(g_t, n, z);
 
 H_z = G_z * (z - 1) / z;
 
-
-
-
 [H_z_num, H_z_den] = numden(H_z);
-
 num_coeffs = sym2poly(H_z_num);
-
 den_coeffs = sym2poly(H_z_den);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%------------- COEFICIENTES -------------%
+num_coeffs = real(num_coeffs);
+den_coeffs = real(den_coeffs);
+
+[ss,gn] = tf2sos(num_coeffs, den_coeffs);
+
+ss(1, 2) = -Inf;
+
+%ss = ss / 2 * 32678
+
+
+
+
+
+
+
+
+
+
+
+
+%------------- GRÁFICOS -------------%
 % Calculando a resposta em frequência
 [Hz, Freq] = freqz(num_coeffs, den_coeffs, 'half', 4096);
 
@@ -194,18 +234,3 @@ ylabel("Magnitude (dB)")
 % Ajustando os ticks e labels do eixo x
 xticks([0, pi/6, pi/3, pi/2, pi]);
 xticklabels({'0', '\pi/6', '\pi/3', '\pi/2', '\pi'});
-
-
-
-%h_n = iztrans(H_z, z, n);
-
-
-
-
-
-
-
-
-
-
-

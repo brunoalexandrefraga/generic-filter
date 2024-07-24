@@ -1,3 +1,4 @@
+%------------- BUTTERWORTH -------------%
 f_p = 2; % [kHz]
 f_s = 3.2; % [kHz]
 
@@ -45,7 +46,7 @@ G0 = epsilon ^ (-1);
 
 
 
-
+%------------- INVARIÂNCIA INDICIAL -------------%
 % Função de transferência normalizada
 [num, den] = zp2tf([], s_bar, G0);
 
@@ -97,14 +98,49 @@ G_z = ztrans(g_t, n, z);
 H_z = G_z * (z - 1) / z;
 
 
-
-
 [H_z_num, H_z_den] = numden(H_z);
-
 num_coeffs = sym2poly(H_z_num);
-
 den_coeffs = sym2poly(H_z_den);
 
+
+
+
+
+
+
+
+
+
+
+%------------- COEFICIENTES -------------%
+num_coeffs = real(num_coeffs);
+den_coeffs = real(den_coeffs);
+
+[ss,gn] = tf2sos(num_coeffs, den_coeffs);
+
+ss = ss / 2 * 32678
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%------------- GRÁFICOS -------------%
 % Calculando a resposta em frequência
 [Hz, Freq] = freqz(num_coeffs, den_coeffs, 'half', 4096);
 
