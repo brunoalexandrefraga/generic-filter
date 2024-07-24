@@ -118,136 +118,32 @@ T_bar = G0 / D0 * T;
 % Função de transferência desnormalizada
 Ha = tf(num, den);
 
+% Calcula Ga = Ha / s
+den = [den, 0]; % den * s
+num = [0, num]; % num
+
+Ga = tf(num, den);
 
 
-r_den = roots(den);
 
-% Identifique raízes complexas conjugadas
-r_complex = r_den(imag(r_den) ~= 0);
 
-% Inicialize a lista de polinômios
-den_biquad_polynomials = [];
 
-% Forme os polinômios de segunda ordem
-while ~isempty(r_complex)
-    % Pegue o par de raízes complexas conjugadas
-    root1 = r_complex(1);
-    root2 = conj(root1);
-    
-    % Calcule os coeficientes do polinômio de segunda ordem
-    a = 1;
-    b = -(root1 + root2);
-    c = root1 * root2;
-    
-    % Crie o polinômio de segunda ordem
-    poly = [a -b c];
-    
-    % Adicione o polinômio à lista
-    den_biquad_polynomials = [den_biquad_polynomials; poly];
-    
-    % Remova as raízes já processadas
-    r_complex(1) = [];
+
+[r,p,k] = residue(num, den);
+
+
+% Inicialize a função simbólica s
+syms s t
+h_t = 0;
+
+terms = [];
+
+% Transformada de Laplace inversa para cada termo de fração parcial
+for i = 1:length(r)
+    term = r(i) / (s - p(i));
+    h_t = h_t + ilaplace(term, s, t);
 end
 
-% Identifique e adicione os polinômios com raízes reais
-r_real = r_den(imag(r_den) == 0);
-
-% Forme os polinômios de segunda ordem a partir das raízes reais
-while length(r_real) >= 2
-    % Pegue o par de raízes reais
-    root1 = r_real(1);
-    root2 = r_real(2);
-    
-    % Calcule os coeficientes do polinômio de segunda ordem
-    a = 1;
-    b = -(root1 + root2);
-    c = root1 * root2;
-    
-    % Crie o polinômio de segunda ordem
-    poly = [a -b c];
-    
-    % Adicione o polinômio à lista
-    den_biquad_polynomials = [den_biquad_polynomials; poly];
-    
-    % Remova as raízes já processadas
-    r_real(1:2) = [];
-end
-
-% Se houver uma raiz real isolada, adicione o polinômio correspondente
-if ~isempty(r_real)
-    root1 = r_real(1);
-    poly = [0 1 -root1];
-    den_biquad_polynomials = [den_biquad_polynomials; poly];
-end
-
-den_biquad_polynomials = unique(den_biquad_polynomials, 'rows', 'stable');
-
-
-
-
-
-
-r_num = roots(num);
-
-% Identifique raízes complexas conjugadas
-r_complex = r_num(imag(r_num) ~= 0);
-
-% Inicialize a lista de polinômios
-num_biquad_polynomials = [];
-
-% Forme os polinômios de segunda ordem
-while ~isempty(r_complex)
-    % Pegue o par de raízes complexas conjugadas
-    root1 = r_complex(1);
-    root2 = conj(root1);
-    
-    % Calcule os coeficientes do polinômio de segunda ordem
-    a = 1;
-    b = -(root1 + root2);
-    c = root1 * root2;
-    
-    % Crie o polinômio de segunda ordem
-    poly = [a -b c];
-    
-    % Adicione o polinômio à lista
-    num_biquad_polynomials = [num_biquad_polynomials; poly];
-    
-    % Remova as raízes já processadas
-    r_complex(1) = [];
-end
-
-% Identifique e adicione os polinômios com raízes reais
-r_real = r_num(imag(r_num) == 0);
-
-% Forme os polinômios de segunda ordem a partir das raízes reais
-while length(r_real) >= 2
-    % Pegue o par de raízes reais
-    root1 = r_real(1);
-    root2 = r_real(2);
-    
-    % Calcule os coeficientes do polinômio de segunda ordem
-    a = 1;
-    b = -(root1 + root2);
-    c = root1 * root2;
-    
-    % Crie o polinômio de segunda ordem
-    poly = [a -b c];
-    
-    % Adicione o polinômio à lista
-    num_biquad_polynomials = [num_biquad_polynomials; poly];
-    
-    % Remova as raízes já processadas
-    r_real(1:2) = [];
-end
-
-% Se houver uma raiz real isolada, adicione o polinômio correspondente
-if ~isempty(r_real)
-    root1 = r_real(1);
-    poly = [0 1 -root1];
-    num_biquad_polynomials = [num_biquad_polynomials; poly];
-end
-
-num_biquad_polynomials = unique(num_biquad_polynomials, 'rows', 'stable');
 
 
 
@@ -266,13 +162,3 @@ num_biquad_polynomials = unique(num_biquad_polynomials, 'rows', 'stable');
 
 
 
-
-
-
-
-
-
-
-
-
-Ga = Ha/s_bar;
