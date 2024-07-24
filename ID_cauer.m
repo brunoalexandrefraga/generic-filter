@@ -1,5 +1,7 @@
 M = 5;
 
+Fs = 48; % [kHz]
+
 f_p = 2; % [kHz]
 omega_p = 2*pi*f_p; % [rad/s]
 
@@ -118,6 +120,24 @@ T_bar = G0 / D0 * T;
 % Função de transferência desnormalizada
 Ha = tf(num, den);
 
+
+
+
+
+
+
+
+
+
+
+
+
+%num = [0 1];
+%den = [1 3];
+
+
+
+
 % Calcula Ga = Ha / s
 den = [den, 0]; % den * s
 num = [0, num]; % num
@@ -133,17 +153,25 @@ Ga = tf(num, den);
 
 
 % Inicialize a função simbólica s
-syms s t
-h_t = 0;
-
-terms = [];
+syms s t z n
+g_t = 0;
 
 % Transformada de Laplace inversa para cada termo de fração parcial
 for i = 1:length(r)
     term = r(i) / (s - p(i));
-    h_t = h_t + ilaplace(term, s, t);
+    g_t = g_t + ilaplace(term, s, t);
 end
 
+%g_t = g_t * heaviside(t);
+
+Delta_t = 1 / Fs;
+
+t = n * Delta_t;
+g_t = subs(g_t);
+
+G_z = ztrans(g_t, n, z);
+
+H_z = G_z*(z-1)/z;
 
 
 
@@ -151,6 +179,7 @@ end
 
 
 
+h_n = iztrans(H_z, z, n);
 
 
 
