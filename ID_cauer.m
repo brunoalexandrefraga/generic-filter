@@ -208,7 +208,7 @@ den_coeffs = real(den_coeffs);
 
 ss(1, 2) = -Inf;
 
-%ss = ss / 2 * 32678
+ss = ss / 2 * 32678
 
 
 
