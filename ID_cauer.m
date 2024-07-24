@@ -183,13 +183,17 @@ num_coeffs = sym2poly(H_z_num);
 den_coeffs = sym2poly(H_z_den);
 
 % Calculando a resposta em frequência
-[Hz, Freq] = freqz(num_coeffs, den_coeffs, 4096);
+[Hz, Freq] = freqz(num_coeffs, den_coeffs, 'half', 4096);
 
 plot(Freq, mag2db(abs(Hz)))
-axis([0 5 -60 5])
+axis([0 pi -60 5])
 grid
-xlabel("Frequency (kHz)")
+xlabel("Angular Frequency (rad/s)")
 ylabel("Magnitude (dB)")
+
+% Ajustando os ticks e labels do eixo x
+xticks([0, pi/6, pi/3, pi/2, pi]);
+xticklabels({'0', '\pi/6', '\pi/3', '\pi/2', '\pi'});
 
 
 
