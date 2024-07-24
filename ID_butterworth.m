@@ -60,14 +60,12 @@ Ha = tf(num, den);
 
 
 
-
-
-
 % Calcula Ga = Ha / s
 den = [den, 0]; % den * s
 num = [0, num]; % num
 
 Ga = tf(num, den);
+
 
 
 
@@ -97,7 +95,26 @@ G_z = ztrans(g_t, n, z);
 
 H_z = G_z*(z-1)/z;
 
-h_n = iztrans(H_z, z, n);
+
+
+
+[H_z_num, H_z_den] = numden(H_z);
+
+num_coeffs = sym2poly(H_z_num);
+
+den_coeffs = sym2poly(H_z_den);
+
+% Calculando a resposta em frequência
+[Hz, Freq] = freqz(num_coeffs, den_coeffs, 4096);
+
+plot(Freq, mag2db(abs(Hz)))
+axis([0 5 -60 5])
+grid
+xlabel("Frequency (kHz)")
+ylabel("Magnitude (dB)")
+
+
+%h_n = iztrans(H_z, z, n);
 
 
 
@@ -115,12 +132,3 @@ h_n = iztrans(H_z, z, n);
 
 
 
-
-
-
-
-
-
-s = tf('s');
-
-Ga = Ha / s;
