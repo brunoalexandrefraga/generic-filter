@@ -1,3 +1,5 @@
+%------------- FILTRO ANALÓGICO -------------%
+
 M = 5;
 
 f_p = 2; % [kHz]
@@ -104,10 +106,6 @@ else
 end
 
 T_bar = G0 / D0 * T;
-
-
-
-
 
 % Resposta em Frequência
 [num, den] = tfdata(T_bar, 'v');

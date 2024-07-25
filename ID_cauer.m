@@ -1,4 +1,4 @@
-%------------- CAUER -------------%
+%------------- FILTRO ANALÓGICO -------------%
 M = 5;
 
 Fs = 48; % [kHz]
@@ -108,33 +108,6 @@ end
 
 T_bar = G0 / D0 * T;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%------------- INVARIÂNCIA INDICIAL -------------%
 % Resposta em Frequência
 [num, den] = tfdata(T_bar, 'v');
 
@@ -143,6 +116,33 @@ T_bar = G0 / D0 * T;
 
 % Função de transferência desnormalizada
 Ha = tf(num, den);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%------------- ANALÓGICO PARA DIGITAL -------------%
 
 % Calcula Ga = Ha / s
 den = [den, 0]; % den * s
@@ -200,7 +200,7 @@ den_coeffs = sym2poly(H_z_den);
 
 
 
-%------------- COEFICIENTES -------------%
+%------------- COEFICIENTES DIGITAIS -------------%
 num_coeffs = real(num_coeffs);
 den_coeffs = real(den_coeffs);
 
@@ -222,7 +222,7 @@ ss = ss / 2 * 32678
 
 
 
-%------------- GRÁFICOS -------------%
+%------------- GRÁFICO DIGITAL -------------%
 % Calculando a resposta em frequência
 [Hz, Freq] = freqz(num_coeffs, den_coeffs, 'half', 4096);
 

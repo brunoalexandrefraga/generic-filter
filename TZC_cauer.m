@@ -1,4 +1,4 @@
-%------------- CAUER -------------%
+%------------- FILTRO ANALÓGICO -------------%
 M = 5;
 
 Fs = 48; % [kHz]
@@ -108,33 +108,6 @@ end
 
 T_bar = G0 / D0 * T;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%------------- TRANSFORMADA Z CASADA -------------%
 % Resposta em Frequência
 [num, den] = tfdata(T_bar, 'v');
 
@@ -142,41 +115,7 @@ T_bar = G0 / D0 * T;
 [num, den] = lp2lp(num, den, omega_p);
 
 % Função de transferência desnormalizada
-Ha = tf(num, den);
-
-% Calcula Ga = Ha / s
-den = [den, 0]; % den * s
-num = [0, num]; % num
-
-Ga = tf(num, den);
-
-[r,p,k] = residue(num, den);
-
-% Inicialize a função simbólica s
-syms s t z n
-g_t = 0;
-
-% Transformada de Laplace inversa para cada termo de fração parcial
-for i = 1:length(r)
-    term = r(i) / (s - p(i));
-
-    g_t = g_t + ilaplace(term, s, t);
-end
-
-%g_t = g_t * heaviside(t);
-
-Delta_t = 1 / Fs;
-
-t = n * Delta_t;
-g_t = subs(g_t);
-
-G_z = ztrans(g_t, n, z);
-
-H_z = G_z * (z - 1) / z;
-
-[H_z_num, H_z_den] = numden(H_z);
-num_coeffs = sym2poly(H_z_num);
-den_coeffs = sym2poly(H_z_den);
+H_s = tf(num, den);
 
 
 
@@ -200,16 +139,52 @@ den_coeffs = sym2poly(H_z_den);
 
 
 
-%------------- COEFICIENTES -------------%
-num_coeffs = real(num_coeffs);
-den_coeffs = real(den_coeffs);
 
-[ss,gn] = tf2sos(num_coeffs, den_coeffs);
+
+%------------- ANALÓGICO PARA DIGITAL -------------%
+% Obter polos e zeros no domínio s
+[zeros_s, poles_s, gain_s] = tf2zp(num, den);
+
+% Calcular valores de e^(-c_i * Ts) para zeros e e^(-d_i * Ts) para polos
+zeros_z = exp(-zeros_s * 1 / Fs);
+poles_z = exp(-poles_s * 1 / Fs);
+
+% Construir a função de transferência no domínio z
+% Numerador da função de transferência no domínio z
+num_z = poly(zeros_z); % Cria o polinômio a partir dos zeros z
+
+% Denominador da função de transferência no domínio z
+den_z = poly(poles_z); % Cria o polinômio a partir dos polos z
+
+% Criar a função de transferência no domínio z
+sys_z = tf(num_z, den_z, 1 / Fs);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%------------- COEFICIENTES DIGITAIS -------------%
+[ss,gn] = tf2sos(num_z, den_z);
 
 %ss(1, 1) = 0;
 %ss(1, 2) = 1;
 
-ss = ss / 2 * 32678
+ss = ss / 2 * 32678;
 
 
 
@@ -222,9 +197,9 @@ ss = ss / 2 * 32678
 
 
 
-%------------- GRÁFICOS -------------%
+%------------- GRÁFICO DIGITAL -------------%
 % Calculando a resposta em frequência
-[Hz, Freq] = freqz(num_coeffs, den_coeffs, 'half', 4096);
+[Hz, Freq] = freqz(num_z, den_z, 'half', 4096);
 
 plot(Freq, mag2db(abs(Hz)))
 axis([0 pi -60 5])

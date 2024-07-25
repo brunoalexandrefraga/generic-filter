@@ -1,4 +1,4 @@
-%------------- BUTTERWORTH -------------%
+%------------- FILTRO ANALÓGICO -------------%
 f_p = 2; % [kHz]
 f_s = 3.2; % [kHz]
 
@@ -39,14 +39,6 @@ end
 
 G0 = epsilon ^ (-1);
 
-
-
-
-
-
-
-
-%------------- TRANSFORMAÇÃO BILINEAR -------------%
 % Função de transferência normalizada
 [num, den] = zp2tf([], s_bar, G0);
 
@@ -61,46 +53,10 @@ Ha = tf(num, den);
 
 
 
-% Calcula Ga = Ha / s
-den = [den, 0]; % den * s
-num = [0, num]; % num
 
-Ga = tf(num, den);
-
-
-
-
-
-
-
-[r,p,k] = residue(num, den);
-
-
-% Inicialize a função simbólica s
-syms s t z n
-g_t = 0;
-
-% Transformada de Laplace inversa para cada termo de fração parcial
-for i = 1:length(r)
-    term = r(i) / (s - p(i));
-    g_t = g_t + ilaplace(term, s, t);
-end
-
-%g_t = g_t * heaviside(t);
-
-Delta_t = 1 / Fs;
-
-t = n * Delta_t;
-g_t = subs(g_t);
-
-G_z = ztrans(g_t, n, z);
-
-H_z = G_z * (z - 1) / z;
-
-
-[H_z_num, H_z_den] = numden(H_z);
-num_coeffs = sym2poly(H_z_num);
-den_coeffs = sym2poly(H_z_den);
+%------------- ANALÓGICO PARA DIGITAL -------------%
+% Analog to digital
+[num_coeffs, den_coeffs] = bilinear(num, den, Fs);
 
 
 
@@ -111,8 +67,7 @@ den_coeffs = sym2poly(H_z_den);
 
 
 
-
-%------------- COEFICIENTES -------------%
+%------------- COEFICIENTES DIGITAIS -------------%
 num_coeffs = real(num_coeffs);
 den_coeffs = real(den_coeffs);
 
@@ -140,7 +95,7 @@ ss = ss / 2 * 32678
 
 
 
-%------------- GRÁFICOS -------------%
+%------------- GRÁFICO DIGITAL -------------%
 % Calculando a resposta em frequência
 [Hz, Freq] = freqz(num_coeffs, den_coeffs, 'half', 4096);
 
@@ -153,24 +108,3 @@ ylabel("Magnitude (dB)")
 % Ajustando os ticks e labels do eixo x
 xticks([0, pi/6, pi/3, pi/2, pi]);
 xticklabels({'0', '\pi/6', '\pi/3', '\pi/2', '\pi'});
-
-
-
-%h_n = iztrans(H_z, z, n);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

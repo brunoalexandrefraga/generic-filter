@@ -1,3 +1,5 @@
+%------------- FILTRO ANALÓGICO -------------%
+
 f_p = 2; % [kHz]
 f_s = 3.2; % [kHz]
 
@@ -39,11 +41,6 @@ end
 G0 = epsilon ^ (-1);
 
 T_bar = tf(G0, s_bar);
-
-
-
-
-
 
 % Função de transferência normalizada
 [num, den] = zp2tf([], s_bar, G0);

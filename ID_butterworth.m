@@ -1,4 +1,4 @@
-%------------- BUTTERWORTH -------------%
+%------------- FILTRO ANALÓGICO -------------%
 f_p = 2; % [kHz]
 f_s = 3.2; % [kHz]
 
@@ -39,14 +39,6 @@ end
 
 G0 = epsilon ^ (-1);
 
-
-
-
-
-
-
-
-%------------- INVARIÂNCIA INDICIAL -------------%
 % Função de transferência normalizada
 [num, den] = zp2tf([], s_bar, G0);
 
@@ -61,20 +53,17 @@ Ha = tf(num, den);
 
 
 
+
+
+
+%------------- ANALÓGICO PARA DIGITAL -------------%
 % Calcula Ga = Ha / s
 den = [den, 0]; % den * s
 num = [0, num]; % num
 
 Ga = tf(num, den);
 
-
-
-
-
-
-
 [r,p,k] = residue(num, den);
-
 
 % Inicialize a função simbólica s
 syms s t z n
@@ -112,7 +101,7 @@ den_coeffs = sym2poly(H_z_den);
 
 
 
-%------------- COEFICIENTES -------------%
+%------------- COEFICIENTES DIGITAIS -------------%
 num_coeffs = real(num_coeffs);
 den_coeffs = real(den_coeffs);
 
@@ -140,7 +129,7 @@ ss = ss / 2 * 32678
 
 
 
-%------------- GRÁFICOS -------------%
+%------------- GRÁFICO DIGITAL -------------%
 % Calculando a resposta em frequência
 [Hz, Freq] = freqz(num_coeffs, den_coeffs, 'half', 4096);
 
@@ -153,24 +142,3 @@ ylabel("Magnitude (dB)")
 % Ajustando os ticks e labels do eixo x
 xticks([0, pi/6, pi/3, pi/2, pi]);
 xticklabels({'0', '\pi/6', '\pi/3', '\pi/2', '\pi'});
-
-
-
-%h_n = iztrans(H_z, z, n);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
