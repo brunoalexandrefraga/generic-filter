@@ -206,7 +206,8 @@ den_coeffs = real(den_coeffs);
 
 [ss,gn] = tf2sos(num_coeffs, den_coeffs);
 
-ss(1, 2) = -Inf;
+%ss(1, 1) = 0;
+%ss(1, 2) = 1;
 
 ss = ss / 2 * 32678
 
