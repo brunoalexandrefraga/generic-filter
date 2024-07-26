@@ -55,41 +55,64 @@ Ha = tf(num, den);
 
 
 %------------- ANALÓGICO PARA DIGITAL -------------%
-% Calcula Ga = Ha / s
-den = [den, 0]; % den * s
-num = [0, num]; % num
+Ts = 1/Fs; % Período de amostragem
 
-Ga = tf(num, den);
+% Criar a função de transferência no domínio s
+sys_s = tf(num, den);
 
-[r,p,k] = residue(num, den);
+% Obter polos e zeros no domínio s
+[zeros_s, poles_s, gain_s] = tf2zp(num, den);
 
+% Inicializar arrays para os novos numeradores e denominadores no domínio z
+num_z = 1;
+den_z = 1;
 
-% Inicialize a função simbólica s
-syms s t z n
-g_t = 0;
-
-% Transformada de Laplace inversa para cada termo de fração parcial
-for i = 1:length(r)
-    term = r(i) / (s - p(i));
-    g_t = g_t + ilaplace(term, s, t);
+% Calcular os valores para cada par de polos e zeros complexos conjugados
+for k = 1:2:length(poles_s)
+    a = real(poles_s(k));
+    b = imag(poles_s(k));
+    if b ~= 0 % Considerar apenas polos/zeros complexos conjugados
+        % Polinômio no domínio z para o par de polos/zeros
+        poly_z = [1 -2*exp(-a*Ts)*cos(b*Ts) exp(-2*a*Ts)];
+        
+        % Atualizar denominador
+        den_z = conv(den_z, poly_z);
+    else
+        poly_z = [1 exp(-a*Ts)];
+        den_z = conv(den_z, poly_z);
+    end
 end
 
-%g_t = g_t * heaviside(t);
+% Repetir o processo para zeros
+for k = 1:2:length(zeros_s)
+    a = real(zeros_s(k));
+    b = imag(zeros_s(k));
+    if b ~= 0 % Considerar apenas polos/zeros complexos conjugados
+        % Polinômio no domínio z para o par de polos/zeros
+        poly_z = [1 -2*exp(-a*Ts)*cos(b*Ts) exp(-2*a*Ts)];
+        
+        % Atualizar numerador
+        num_z = conv(num_z, poly_z);
+    else
+        poly_z = [1 exp(-a*Ts)];
+        num_z = conv(num_z, poly_z);
+    end
+end
 
-Delta_t = 1 / Fs;
+% Ajustar o ganho para corresponder o ganho original
+gain_z = gain_s * (abs(den_z(1)) / abs(num_z(1)));
+num_z = num_z * gain_z;
 
-t = n * Delta_t;
-g_t = subs(g_t);
+% Inverter os coeficientes do numerador e do denominador para obter expoentes negativos
+num_z = fliplr(num_z);
+den_z = fliplr(den_z);
 
-G_z = ztrans(g_t, n, z);
+% Normalizando coeficientes
+num_z = num_z / num_z(1);
+den_z = den_z / den_z(1);
 
-H_z = G_z * (z - 1) / z;
-
-
-[H_z_num, H_z_den] = numden(H_z);
-num_coeffs = sym2poly(H_z_num);
-den_coeffs = sym2poly(H_z_den);
-
+% Criar a função de transferência no domínio z com expoentes negativos
+H_z = tf(num_z, den_z, Ts, 'Variable', 'z^-1');
 
 
 
@@ -101,10 +124,7 @@ den_coeffs = sym2poly(H_z_den);
 
 
 %------------- COEFICIENTES DIGITAIS -------------%
-num_coeffs = real(num_coeffs);
-den_coeffs = real(den_coeffs);
-
-[ss,gn] = tf2sos(num_coeffs, den_coeffs);
+[ss,gn] = tf2sos(num_z, den_z);
 
 ss = ss / 2 * 32678
 
@@ -130,7 +150,7 @@ ss = ss / 2 * 32678
 
 %------------- GRÁFICO DIGITAL -------------%
 % Calculando a resposta em frequência
-[Hz, Freq] = freqz(num_coeffs, den_coeffs, 'half', 4096);
+[Hz, Freq] = freqz(num_z, den_z, 'half', 4096);
 
 plot(Freq, mag2db(abs(Hz)))
 axis([0 pi -60 5])
@@ -141,3 +161,8 @@ ylabel("Magnitude (dB)")
 % Ajustando os ticks e labels do eixo x
 xticks([0, pi/6, pi/3, pi/2, pi]);
 xticklabels({'0', '\pi/6', '\pi/3', '\pi/2', '\pi'});
+
+% Plotar os polos e zeros
+figure;
+zplane(num_z, den_z);
+title('Diagrama de Polos e Zeros');

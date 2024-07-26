@@ -235,3 +235,8 @@ ylabel("Magnitude (dB)")
 % Ajustando os ticks e labels do eixo x
 xticks([0, pi/6, pi/3, pi/2, pi]);
 xticklabels({'0', '\pi/6', '\pi/3', '\pi/2', '\pi'});
+
+% Plotar os polos e zeros
+figure;
+zplane(num_coeffs, den_coeffs);
+title('Diagrama de Polos e Zeros');
