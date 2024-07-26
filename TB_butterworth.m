@@ -73,7 +73,9 @@ den_coeffs = real(den_coeffs);
 
 [ss,gn] = tf2sos(num_coeffs, den_coeffs);
 
-ss = ss / 2 * 32678
+ss = ss / 2 * 32678;
+
+disp(ss);
 
 
 
@@ -109,7 +111,27 @@ ylabel("Magnitude (dB)")
 xticks([0, pi/6, pi/3, pi/2, pi]);
 xticklabels({'0', '\pi/6', '\pi/3', '\pi/2', '\pi'});
 
+
+
 % Plotar os polos e zeros
 figure;
-zplane(den_coeffs, den_coeffs);
+zplane(num_coeffs, den_coeffs);
 title('Diagrama de Polos e Zeros');
+
+
+
+
+% Plotar os polos e zeros
+figure;
+h1 = zplane(num_coeffs, den_coeffs);
+
+num_coeffs_truncated = num_coeffs / 2 * 32678;
+den_coeffs_truncated = den_coeffs / 2 * 32678;
+
+hold on;
+h2 = zplane(num_coeffs_truncated, den_coeffs_truncated);
+set(h2(1), 'Marker', 's', 'MarkerEdgeColor', 'r'); % Quadrados vermelhos para zeros
+
+title('Diagrama de Polos e Zeros');
+
+hold off

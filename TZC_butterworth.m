@@ -126,8 +126,9 @@ H_z = tf(num_z, den_z, Ts, 'Variable', 'z^-1');
 %------------- COEFICIENTES DIGITAIS -------------%
 [ss,gn] = tf2sos(num_z, den_z);
 
-ss = ss / 2 * 32678
+ss = ss / 2 * 32678;
 
+disp(ss);
 
 
 
@@ -162,7 +163,26 @@ ylabel("Magnitude (dB)")
 xticks([0, pi/6, pi/3, pi/2, pi]);
 xticklabels({'0', '\pi/6', '\pi/3', '\pi/2', '\pi'});
 
+
+
 % Plotar os polos e zeros
 figure;
 zplane(num_z, den_z);
 title('Diagrama de Polos e Zeros');
+
+
+
+% Plotar os polos e zeros
+figure;
+h1 = zplane(num_z, den_z);
+
+num_z_truncated = num_z / 2 * 32678;
+den_z_truncated = den_z / 2 * 32678;
+
+hold on;
+h2 = zplane(num_z_truncated, den_z_truncated);
+set(h2(1), 'Marker', 's', 'MarkerEdgeColor', 'r'); % Quadrados vermelhos para zeros
+
+title('Diagrama de Polos e Zeros');
+
+hold off

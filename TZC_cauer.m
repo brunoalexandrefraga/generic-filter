@@ -225,6 +225,8 @@ H_z = tf(num_z, den_z, Ts, 'Variable', 'z^-1');
 
 ss = ss / 2 * 32678;
 
+disp(ss);
+
 
 
 
@@ -238,7 +240,7 @@ ss = ss / 2 * 32678;
 
 %------------- GRÁFICO DIGITAL -------------%
 % Calculando a resposta em frequência
-[Hz, Freq] = freqz(num_z, den_z, 'whole', 4096);
+[Hz, Freq] = freqz(num_z, den_z, 'half', 4096);
 
 plot(Freq, mag2db(abs(Hz)))
 axis([0 pi -60 5])
@@ -250,7 +252,26 @@ ylabel("Magnitude (dB)")
 xticks([0, pi/6, pi/3, pi/2, pi]);
 xticklabels({'0', '\pi/6', '\pi/3', '\pi/2', '\pi'});
 
+
+
 % Plotar os polos e zeros
 figure;
 zplane(num_z, den_z);
 title('Diagrama de Polos e Zeros');
+
+
+
+% Plotar os polos e zeros
+figure;
+h1 = zplane(num_z, den_z);
+
+num_z_truncated = num_z / 2 * 32678;
+den_z_truncated = den_z / 2 * 32678;
+
+hold on;
+h2 = zplane(num_z_truncated, den_z_truncated);
+set(h2(1), 'Marker', 's', 'MarkerEdgeColor', 'r'); % Quadrados vermelhos para zeros
+
+title('Diagrama de Polos e Zeros');
+
+hold off
